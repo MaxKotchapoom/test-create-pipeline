@@ -26,74 +26,79 @@ function getFormattedNumber(num){
 function reverseNumberFormat(num){
 	return Number(num.replace(/,/g,''));
 }
-var operator = document.getElementsByClassName("operator");
-for(var i =0;i<operator.length;i++){
-	operator[i].addEventListener('click',function(){
-		if(this.id=="clear"){
-			printHistory("");
-			printOutput("");
-		}
-		else if(this.id=="backspace"){
-			var output=reverseNumberFormat(getOutput()).toString();
-			if(output){//if output has a value
-				output= output.substr(0,output.length-1);
+
+// -------------------------------------------------------------
+// ฟังก์ชันคำนวณ พร้อมเช็กการหารด้วย 0 (สำหรับนำไป Test)
+// -------------------------------------------------------------
+function calculate(historyExpression) {
+	if (!historyExpression) return "";
+	var result = eval(historyExpression);
+	
+	// ถ้าผลลัพธ์เป็น Infinity ให้คืนค่าข้อความเตือน
+	if (!isFinite(result)) {
+		return "Cannot divide by 0";
+	}
+	return result;
+}
+
+// -------------------------------------------------------------
+// ครอบการจัดการ DOM ให้ทำงานเฉพาะบนเบราว์เซอร์เท่านั้น
+// -------------------------------------------------------------
+if (typeof document !== 'undefined') {
+	var operator = document.getElementsByClassName("operator");
+	for(var i =0;i<operator.length;i++){
+		operator[i].addEventListener('click',function(){
+			if(this.id=="clear"){
+				printHistory("");
+				printOutput("");
+			}
+			else if(this.id=="backspace"){
+				var output=reverseNumberFormat(getOutput()).toString();
+				if(output){
+					output= output.substr(0,output.length-1);
+					printOutput(output);
+				}
+			}
+			else{
+				var output=getOutput();
+				var history=getHistory();
+				if(output==""&&history!=""){
+					if(isNaN(history[history.length-1])){
+						history= history.substr(0,history.length-1);
+					}
+				}
+				if(output!="" || history!=""){
+					output= output==""?output:reverseNumberFormat(output);
+					history=history+output;
+					if(this.id=="="){
+						var result = calculate(history); // เรียกใช้ฟังก์ชัน calculate
+						printOutput(result);
+						printHistory("");
+					}
+					else{
+						history=history+this.id;
+						printHistory(history);
+						printOutput("");
+					}
+				}
+			}
+		});
+	}
+	var number = document.getElementsByClassName("number");
+	for(var i =0;i<number.length;i++){
+		number[i].addEventListener('click',function(){
+			var output=reverseNumberFormat(getOutput());
+			if(output!=NaN){ 
+				output=output+this.id;
 				printOutput(output);
 			}
-		}
-		else{
-			var output=getOutput();
-			var history=getHistory();
-			if(output==""&&history!=""){
-				if(isNaN(history[history.length-1])){
-					history= history.substr(0,history.length-1);
-				}
-			}
-			if(output!="" || history!=""){
-				output= output==""?output:reverseNumberFormat(output);
-				history=history+output;
-				if(this.id=="="){
-					var result=eval(history);
-
-					if (!isFinite(result)) {
-						printOutput("Cannot divide by 0");
-					} else {
-						printOutput(result);
-					}
-					printHistory("");
-				}
-				else{
-					history=history+this.id;
-					printHistory(history);
-					printOutput("");
-				}
-			}
-		}
-		
-	});
-}
-var number = document.getElementsByClassName("number");
-for(var i =0;i<number.length;i++){
-	number[i].addEventListener('click',function(){
-		var output=reverseNumberFormat(getOutput());
-		if(output!=NaN){ //if output is a number
-			output=output+this.id;
-			printOutput(output);
-		}
-	});
+		});
+	}
 }
 
-function calculate(historyExpression) {
-    if (!historyExpression) return "";
-    var result = eval(historyExpression);
-    
-    // ดักจับการหารด้วย 0
-    if (!isFinite(result)) {
-        return "Cannot divide by 0";
-    }
-    return result;
-}
-
-// ส่งออกฟังก์ชันไว้ใช้ใน Node.js (สำหรับรัน test.js)
+// -------------------------------------------------------------
+// ส่งออกฟังก์ชันสำหรับการรัน Test ใน Node.js
+// -------------------------------------------------------------
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { calculate };
+	module.exports = { calculate };
 }
