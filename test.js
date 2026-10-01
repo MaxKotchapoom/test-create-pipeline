@@ -5,7 +5,7 @@ console.log("--- Starting Unit Tests ---");
 
 try {
     // เคส 1: การหารปกติ
-    assert.strictEqual(calculate("20/2"), 5, "10/2 ต้องได้ 5");
+    assert.strictEqual(calculate("20/2"), 10, "10/2 ต้องได้ 5");
     
     // เคส 2: ดักจับการหารด้วย 0
     assert.strictEqual(calculate("10/0"), "Cannot divide by 0", "การหารด้วย 0 ต้องแสดงข้อความเตือน");
