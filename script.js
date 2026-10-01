@@ -53,7 +53,12 @@ for(var i =0;i<operator.length;i++){
 				history=history+output;
 				if(this.id=="="){
 					var result=eval(history);
-					printOutput(result);
+
+					if (!isFinite(result)) {
+						printOutput("Cannot divide by 0");
+					} else {
+						printOutput(result);
+					}
 					printHistory("");
 				}
 				else{
