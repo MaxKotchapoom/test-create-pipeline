@@ -81,3 +81,19 @@ for(var i =0;i<number.length;i++){
 		}
 	});
 }
+
+function calculate(historyExpression) {
+    if (!historyExpression) return "";
+    var result = eval(historyExpression);
+    
+    // ดักจับการหารด้วย 0
+    if (!isFinite(result)) {
+        return "Cannot divide by 0";
+    }
+    return result;
+}
+
+// ส่งออกฟังก์ชันไว้ใช้ใน Node.js (สำหรับรัน test.js)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { calculate };
+}
